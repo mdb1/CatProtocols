@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CatFactView: View {
-    @StateObject var viewModel: ViewModel = .init(service: CatService())
+    @StateObject var viewModel: ViewModel = .init()
 
     var body: some View {
         VStack {
@@ -39,24 +39,19 @@ struct CatFactView: View {
 
 #if DEBUG
 
-struct FetchCatServiceMock: FetchCatFactProtocol {
-    var throwsError: Bool
-    var sleepNanoseconds: UInt64 = 1_000_000_000
-    func fetchCatFact() async throws -> CatFact {
-        try await Task.sleep(nanoseconds: sleepNanoseconds)
-        if throwsError {
-            throw NSError(domain: "1", code: 1)
-        } else {
-            return .init(fact: "A mocked fact")
-        }
-    }
-}
-
 struct CatFactView_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
-            CatFactView(viewModel: .init(service: FetchCatServiceMock(throwsError: false)))
-            CatFactView(viewModel: .init(service: FetchCatServiceMock(throwsError: true)))
+            CatFactView(viewModel: .init(dependencies: .init(fetchFact: {
+                try await Task.sleep(nanoseconds: 1_000_000_000)
+                return .init(fact: "A mocked fact")
+            })))
+
+            CatFactView(viewModel: .init(dependencies: .init(fetchFact: {
+                try await Task.sleep(nanoseconds: 1_000_000_000)
+                throw NSError(domain: "domain", code: 123)
+            })))
+
             Spacer()
         }
     }
