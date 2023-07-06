@@ -8,7 +8,8 @@
 import XCTest
 @testable import CatProtocols
 
-@MainActor final class CatFactViewModelTests: XCTestCase {
+@MainActor
+final class CatFactViewModelTests: XCTestCase {
     func testFetchCatFactSuccess() async {
         // Given
         let mockFact = CatFact(fact: "A mocked fact")

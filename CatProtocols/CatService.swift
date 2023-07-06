@@ -12,13 +12,7 @@ protocol FetchCatFactProtocol {
     func fetchCatFact() async throws -> CatFact
 }
 
-protocol UpdateCatInformationProtocol {
-    func updateName(id: String) async throws
-}
-
-struct CatService {}
-
-extension CatService: FetchCatFactProtocol {
+struct CatService: FetchCatFactProtocol {
     func fetchCatFact() async throws -> CatFact {
         /// This is using: https://github.com/mdb1/CoreNetworking
         try await HTTPClient.shared
@@ -32,10 +26,3 @@ extension CatService: FetchCatFactProtocol {
             )
     }
 }
-
-extension CatService: UpdateCatInformationProtocol {
-    func updateName(id: String) async throws {
-        // Some networking code
-    }
-}
-
