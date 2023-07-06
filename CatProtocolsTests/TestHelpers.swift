@@ -71,28 +71,3 @@ public extension AssertState {
         testCase.wait(for: [expectation], timeout: 0.5)
     }
 }
-
-public extension XCTestCase {
-    /// Runs the assertions provided in the main thread in an async way.
-    /// Useful for testing objects that make async requests (using mocked protocols for the responses)
-    /// - Parameters:
-    ///   - expectation: The string representation of what we expect.
-    ///   - asyncWaitDuration: Duration in seconds to wait before trying to assert the assertions. Default: 0.05.
-    ///   - timeout: Maximum time in seconds to wait for the expectation. Default: 1 (plus the async await duration).
-    ///   - assertions: escaping method containing all the assertions.
-    func asyncAssert(
-        _ expectation: String,
-        after asyncWaitDuration: Double = 0.05,
-        timeout: Double = 1,
-        assertions: @escaping () -> Void
-    ) {
-        let expectation = XCTestExpectation(description: expectation)
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + asyncWaitDuration) {
-            assertions()
-            expectation.fulfill()
-        }
-
-        wait(for: [expectation], timeout: timeout + asyncWaitDuration)
-    }
-}

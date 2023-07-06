@@ -11,7 +11,7 @@ import SwiftUI
 struct CatProtocolsApp: App {
     var body: some Scene {
         WindowGroup {
-            CatFactView(viewModel: .init(service: CatService()))
+            CatFactView()
         }
     }
 }

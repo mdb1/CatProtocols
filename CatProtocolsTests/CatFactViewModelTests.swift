@@ -9,7 +9,7 @@ import XCTest
 @testable import CatProtocols
 
 @MainActor final class CatFactViewModelTests: XCTestCase {
-    func testFetchCatFactSuccess() {
+    func testFetchCatFactSuccess() async {
         // Given
         let mockFact = CatFact(fact: "A mocked fact")
         let sut = CatFactView.ViewModel(service: FetchCatServiceMock(
@@ -18,12 +18,10 @@ import XCTest
         ))
 
         // When
-        sut.fetch()
+        await sut.fetch()
 
         // Then
-        asyncAssert("Fetch, then update the state") {
-            XCTAssertEqual(sut.state.info, mockFact)
-        }
+        XCTAssertEqual(sut.state.info, mockFact)
     }
 
     func testFetchCatFactSuccessStates() {
@@ -36,8 +34,9 @@ import XCTest
 
         AssertState().assert(
             when: {
-                // When
-                sut.fetch()
+                Task {
+                    await sut.fetch()
+                }
             },
             type: ViewState<CatFact>.self,
             testCase: self,
@@ -53,7 +52,7 @@ import XCTest
         )
     }
 
-    func testFetchCatFactError() {
+    func testFetchCatFactError() async {
         // Given
         let sut = CatFactView.ViewModel(service: FetchCatServiceMock(
             throwsError: true,
@@ -61,12 +60,10 @@ import XCTest
         ))
 
         // When
-        sut.fetch()
+        await sut.fetch()
 
         // Then
-        asyncAssert("Fetch, then update the state") {
-            XCTAssertEqual(sut.state, .error(NSError(domain: "1", code: 1)))
-        }
+        XCTAssertEqual(sut.state, .error(NSError(domain: "1", code: 1)))
     }
 
     func testFetchCatFactErrorStates() {
@@ -78,8 +75,9 @@ import XCTest
 
         AssertState().assert(
             when: {
-                // When
-                sut.fetch()
+                Task {
+                    await sut.fetch()
+                }
             },
             type: ViewState<CatFact>.self,
             testCase: self,

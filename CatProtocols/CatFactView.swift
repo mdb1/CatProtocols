@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CatFactView: View {
-    @ObservedObject var viewModel: ViewModel
+    @StateObject var viewModel: ViewModel = .init(service: CatService())
 
     var body: some View {
         VStack {
@@ -24,13 +24,15 @@ struct CatFactView: View {
                     .foregroundColor(.red)
             }
             Button("Fetch another") {
-                viewModel.fetch()
+                Task {
+                    await viewModel.fetch()
+                }
             }
             .disabled(viewModel.state.isLoading)
         }
         .padding()
         .task {
-            viewModel.fetch()
+            await viewModel.fetch()
         }
     }
 }

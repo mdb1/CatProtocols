@@ -8,23 +8,22 @@
 import SwiftUI
 
 extension CatFactView {
-    @MainActor final class ViewModel: ObservableObject {
+    @MainActor
+    final class ViewModel: ObservableObject {
         @Published var state: ViewState<CatFact> = .initial
         private let service: FetchCatFactProtocol
 
-        init(service: FetchCatFactProtocol) {
+        init(service: FetchCatFactProtocol = CatService()) {
             self.service = service
         }
 
-        func fetch() {
-            Task {
-                do {
-                    state = .loading
-                    let fact = try await service.fetchCatFact()
-                    withAnimation { state = .loaded(fact) }
-                } catch {
-                    withAnimation { state = .error(error) }
-                }
+        func fetch() async {
+            do {
+                state = .loading
+                let fact = try await service.fetchCatFact()
+                withAnimation { state = .loaded(fact) }
+            } catch {
+                withAnimation { state = .error(error) }
             }
         }
     }
